@@ -14,24 +14,8 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 public class Statement {
-    public static void main(String[] args) throws Exception {
-        try {
-            JsonArray invoices = loadJsonArray("json/invoices.json");
-            JsonObject plays = loadJson("json/plays.json");
 
-            for (JsonElement jsonElement : invoices) {
-
-                JsonObject invoice = jsonElement.getAsJsonObject();
-                new Statement().statement(invoice, plays);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void statement(JsonObject invoice, JsonObject plays) throws Exception {
+    public String statement(JsonObject invoice, JsonObject plays) throws Exception {
         double totalAmount = 0;
         int volumeCredits = 0;
         StringBuilder sb = new StringBuilder();
@@ -81,16 +65,16 @@ public class Statement {
         sb.append(String.format("총액: %s\n", currencyFormatter.format(totalAmount/100)));
         sb.append(String.format("적립 포인트: %d점\n", volumeCredits));
 
-        System.out.println(sb.toString());
+        return sb.toString();
     }
 
-    private static JsonObject loadJson(String filePath) throws IOException {
+    public static JsonObject loadJson(String filePath) throws IOException {
         try (FileReader reader = new FileReader(filePath)) {
             return JsonParser.parseReader(reader).getAsJsonObject();
         }
     }
 
-    private static JsonArray loadJsonArray(String filePath) throws IOException {
+    public static JsonArray loadJsonArray(String filePath) throws IOException {
         try (FileReader reader = new FileReader(filePath)) {
             return JsonParser.parseReader(reader).getAsJsonArray();
         }
