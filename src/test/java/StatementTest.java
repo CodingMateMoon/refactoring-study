@@ -20,13 +20,13 @@ class StatementTest {
             JsonObject invoice = jsonElement.getAsJsonObject();
             String expected = """
 청구 내역 (고객명: BigCo)
-  Hamlet: $650.00 (55석)
-  As You Like it: $580.00 (35석)
-  Othello: $500.00 (40석)
+  Hamlet: $650.00 (55석)\s
+  As You Like it: $580.00 (35석)\s
+  Othello: $500.00 (40석)\s
 총액: $1,730.00
 적립 포인트: 47점
 """;
-            Assertions.assertThat(new Statement().statement(invoice, plays).stripTrailing()).isEqualTo(expected.stripTrailing());
+            Assertions.assertThat(new Statement().statement(invoice, plays)).isEqualTo(expected);
         }
     }
 }
