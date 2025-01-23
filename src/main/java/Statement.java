@@ -52,26 +52,26 @@ public class Statement {
     }
 
     private double amountFor(String playType, int perfAudience) throws Exception {
-        double thisAmount;
+        double result;
         switch(playType) {
             case "tragedy": // 비극
-                thisAmount = 40000;
+                result = 40000;
                 if (perfAudience > 30) {
-                    thisAmount += 1000 * (perfAudience - 30);
+                    result += 1000 * (perfAudience - 30);
                 }
                 break;
             case "comedy": // 희극
-                thisAmount = 30000;
+                result = 30000;
                 if (perfAudience > 20) {
-                    thisAmount += 10000 + 500 * (perfAudience - 20);
+                    result += 10000 + 500 * (perfAudience - 20);
                 }
-                thisAmount += 300 * perfAudience;
+                result += 300 * perfAudience;
                 break;
 
             default:
                 throw new Exception(String.format("알 수 없는 장르: %s", playType));
         }
-        return thisAmount;
+        return result;
     }
 
     public static JsonObject loadJson(String filePath) throws IOException {
