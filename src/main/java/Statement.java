@@ -31,24 +31,7 @@ public class Statement {
             String playType = play.get("type").getAsString();
             int perfAudience = perf.get("audience").getAsInt();
 
-            switch(playType) {
-                case "tragedy": // 비극
-                    thisAmount = 40000;
-                    if (perfAudience > 30) {
-                        thisAmount += 1000 * (perfAudience - 30);
-                    }
-                    break;
-                case "comedy": // 희극
-                    thisAmount = 30000;
-                    if (perfAudience > 20) {
-                        thisAmount += 10000 + 500 * (perfAudience - 20);
-                    }
-                    thisAmount += 300 * perfAudience;
-                    break;
-
-                default:
-                    throw new Exception(String.format("알 수 없는 장르: %s", playType));
-            }
+            thisAmount = amountFor(playType, perfAudience);
 
             // 포인트를 적립한다.
             volumeCredits += Math.max(perfAudience - 30, 0);
@@ -66,6 +49,29 @@ public class Statement {
         sb.append(String.format("적립 포인트: %d점\n", volumeCredits));
 
         return sb.toString();
+    }
+
+    private double amountFor(String playType, int perfAudience) throws Exception {
+        double thisAmount;
+        switch(playType) {
+            case "tragedy": // 비극
+                thisAmount = 40000;
+                if (perfAudience > 30) {
+                    thisAmount += 1000 * (perfAudience - 30);
+                }
+                break;
+            case "comedy": // 희극
+                thisAmount = 30000;
+                if (perfAudience > 20) {
+                    thisAmount += 10000 + 500 * (perfAudience - 20);
+                }
+                thisAmount += 300 * perfAudience;
+                break;
+
+            default:
+                throw new Exception(String.format("알 수 없는 장르: %s", playType));
+        }
+        return thisAmount;
     }
 
     public static JsonObject loadJson(String filePath) throws IOException {
