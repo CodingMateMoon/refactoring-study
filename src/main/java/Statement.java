@@ -51,21 +51,21 @@ public class Statement {
         return sb.toString();
     }
 
-    private double amountFor(String playType, int perfAudience) throws Exception {
+    private double amountFor(String playType, int aPerformanceAudience) throws Exception {
         double result;
         switch(playType) {
             case "tragedy": // 비극
                 result = 40000;
-                if (perfAudience > 30) {
-                    result += 1000 * (perfAudience - 30);
+                if (aPerformanceAudience > 30) {
+                    result += 1000 * (aPerformanceAudience - 30);
                 }
                 break;
             case "comedy": // 희극
                 result = 30000;
-                if (perfAudience > 20) {
-                    result += 10000 + 500 * (perfAudience - 20);
+                if (aPerformanceAudience > 20) {
+                    result += 10000 + 500 * (aPerformanceAudience - 20);
                 }
-                result += 300 * perfAudience;
+                result += 300 * aPerformanceAudience;
                 break;
 
             default:
