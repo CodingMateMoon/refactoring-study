@@ -2,14 +2,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import netscape.javascript.JSObject;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -24,12 +19,12 @@ public class Statement {
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
         currencyFormatter.setMinimumFractionDigits(2);
 
-        for(JsonElement perfElement: invoice.getAsJsonArray("performances")){
-            JsonObject perf = perfElement.getAsJsonObject();
-            JsonObject play = plays.getAsJsonObject(perf.get("playID").getAsString());
+        for(JsonElement aPerformanceElement: invoice.getAsJsonArray("performances")){
+            JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
+            JsonObject play = playFor(plays, aPerformance);
             double thisAmount = 0;
             String playType = play.get("type").getAsString();
-            int perfAudience = perf.get("audience").getAsInt();
+            int perfAudience = aPerformance.get("audience").getAsInt();
 
             thisAmount = amountFor(playType, perfAudience);
 
@@ -49,6 +44,11 @@ public class Statement {
         sb.append(String.format("적립 포인트: %d점\n", volumeCredits));
 
         return sb.toString();
+    }
+
+    private static JsonObject playFor(JsonObject plays, JsonObject aPerformance) {
+        JsonObject play = plays.getAsJsonObject(aPerformance.get("playID").getAsString());
+        return play;
     }
 
     private double amountFor(String playType, int aPerformanceAudience) throws Exception {
