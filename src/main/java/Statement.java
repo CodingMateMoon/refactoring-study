@@ -10,18 +10,26 @@ import java.util.Locale;
 
 public class Statement {
 
-    public String statement(JsonObject invoice, JsonObject plays) throws Exception {
+    private final JsonObject invoice;
+    private final JsonObject plays;
+
+    public Statement(JsonObject invoice, JsonObject plays) {
+        this.invoice = invoice;
+        this.plays = plays;
+    }
+
+    public String statement() throws Exception {
         double totalAmount = 0;
         int volumeCredits = 0;
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("청구 내역 (고객명: %s)\n", invoice.get("customer").getAsString() ));
+        sb.append(String.format("청구 내역 (고객명: %s)\n", this.invoice.get("customer").getAsString() ));
 
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
         currencyFormatter.setMinimumFractionDigits(2);
 
-        for(JsonElement aPerformanceElement: invoice.getAsJsonArray("performances")){
+        for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")){
             JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
-            JsonObject play = playFor(plays, aPerformance);
+            JsonObject play = playFor(aPerformance);
             double thisAmount = 0;
             String playType = play.get("type").getAsString();
             int perfAudience = aPerformance.get("audience").getAsInt();
@@ -46,8 +54,8 @@ public class Statement {
         return sb.toString();
     }
 
-    private static JsonObject playFor(JsonObject plays, JsonObject aPerformance) {
-        JsonObject play = plays.getAsJsonObject(aPerformance.get("playID").getAsString());
+    private JsonObject playFor(JsonObject aPerformance) {
+        JsonObject play = this.plays.getAsJsonObject(aPerformance.get("playID").getAsString());
         return play;
     }
 

@@ -26,7 +26,7 @@ class StatementTest {
 총액: $1,730.00
 적립 포인트: 47점
 """;
-            Assertions.assertThat(new Statement().statement(invoice, plays)).isEqualTo(expected);
+            Assertions.assertThat(new Statement(invoice, plays).statement()).isEqualTo(expected);
         }
     }
 }
