@@ -29,21 +29,19 @@ public class Statement {
 
         for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")){
             JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
-            JsonObject play = playFor(aPerformance);
             double thisAmount = 0;
-            String playType = play.get("type").getAsString();
             int perfAudience = aPerformance.get("audience").getAsInt();
 
-            thisAmount = amountFor(playType, perfAudience);
+            thisAmount = amountFor(playFor(aPerformance), perfAudience);
 
             // 포인트를 적립한다.
             volumeCredits += Math.max(perfAudience - 30, 0);
             // 희극 관객 5명마다 추가 포인트를 제공한다.
-            if ("comedy".equals(playType)) {
+            if ("comedy".equals(playFor(aPerformance).get("type").getAsString())) {
                 volumeCredits += perfAudience / 5;
             }
 
-            sb.append(String.format("  %s: %s (%d석) \n", play.get("name").getAsString(), currencyFormatter.format(thisAmount/100), perfAudience));
+            sb.append(String.format("  %s: %s (%d석) \n", playFor(aPerformance).get("name").getAsString(), currencyFormatter.format(thisAmount/100), perfAudience));
             totalAmount += thisAmount;
         }
 
@@ -59,8 +57,9 @@ public class Statement {
         return play;
     }
 
-    private double amountFor(String playType, int aPerformanceAudience) throws Exception {
+    private double amountFor(JsonObject play, int aPerformanceAudience) throws Exception {
         double result;
+        String playType = play.get("type").getAsString();
         switch(playType) {
             case "tragedy": // 비극
                 result = 40000;
