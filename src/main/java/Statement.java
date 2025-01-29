@@ -53,8 +53,7 @@ public class Statement {
     }
 
     private JsonObject playFor(JsonObject aPerformance) {
-        JsonObject play = this.plays.getAsJsonObject(aPerformance.get("playID").getAsString());
-        return play;
+        return this.plays.getAsJsonObject(aPerformance.get("playID").getAsString());
     }
 
     private double amountFor(JsonObject play, int aPerformanceAudience) throws Exception {
