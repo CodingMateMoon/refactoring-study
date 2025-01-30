@@ -32,7 +32,7 @@ public class Statement {
             double thisAmount = 0;
             int perfAudience = aPerformance.get("audience").getAsInt();
 
-            thisAmount = amountFor(perfAudience, playFor(aPerformance));
+            thisAmount = amountFor(aPerformance, playFor(aPerformance));
 
             // 포인트를 적립한다.
             volumeCredits += Math.max(perfAudience - 30, 0);
@@ -56,9 +56,10 @@ public class Statement {
         return this.plays.getAsJsonObject(aPerformance.get("playID").getAsString());
     }
 
-    private double amountFor(int aPerformanceAudience, JsonObject play ) throws Exception {
+    private double amountFor(JsonObject aPerformance, JsonObject play ) throws Exception {
         double result;
         String playType = play.get("type").getAsString();
+        int aPerformanceAudience = aPerformance.get("audience").getAsInt();
         switch(playType) {
             case "tragedy": // 비극
                 result = 40000;
