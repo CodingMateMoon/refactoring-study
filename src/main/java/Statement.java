@@ -60,7 +60,7 @@ public class Statement {
         double result;
         String playType = play.get("type").getAsString();
         int aPerformanceAudience = aPerformance.get("audience").getAsInt();
-        switch(playType) {
+        switch(playFor(aPerformance).get("type").getAsString()) {
             case "tragedy": // 비극
                 result = 40000;
                 if (aPerformanceAudience > 30) {
@@ -76,7 +76,7 @@ public class Statement {
                 break;
 
             default:
-                throw new Exception(String.format("알 수 없는 장르: %s", playType));
+                throw new Exception(String.format("알 수 없는 장르: %s", playFor(aPerformance).get("type").getAsString()));
         }
         return result;
     }
