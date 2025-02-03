@@ -29,10 +29,7 @@ public class Statement {
 
         for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")){
             JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
-            double thisAmount = 0;
             int perfAudience = aPerformance.get("audience").getAsInt();
-
-            thisAmount = amountFor(aPerformance);
 
             // 포인트를 적립한다.
             volumeCredits += Math.max(perfAudience - 30, 0);
@@ -41,8 +38,8 @@ public class Statement {
                 volumeCredits += perfAudience / 5;
             }
 
-            sb.append(String.format("  %s: %s (%d석) \n", playFor(aPerformance).get("name").getAsString(), currencyFormatter.format(thisAmount/100), perfAudience));
-            totalAmount += thisAmount;
+            sb.append(String.format("  %s: %s (%d석) \n", playFor(aPerformance).get("name").getAsString(), currencyFormatter.format(amountFor(aPerformance)/100), perfAudience));
+            totalAmount += amountFor(aPerformance);
         }
 
 
