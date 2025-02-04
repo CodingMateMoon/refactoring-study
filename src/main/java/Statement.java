@@ -32,11 +32,7 @@ public class Statement {
             int perfAudience = aPerformance.get("audience").getAsInt();
 
             // 포인트를 적립한다.
-            volumeCredits += Math.max(perfAudience - 30, 0);
-            // 희극 관객 5명마다 추가 포인트를 제공한다.
-            if ("comedy".equals(playFor(aPerformance).get("type").getAsString())) {
-                volumeCredits += perfAudience / 5;
-            }
+            volumeCredits += volumeCreditsFor(aPerformance);
 
             sb.append(String.format("  %s: %s (%d석) \n", playFor(aPerformance).get("name").getAsString(), currencyFormatter.format(amountFor(aPerformance)/100), perfAudience));
             totalAmount += amountFor(aPerformance);
@@ -47,6 +43,17 @@ public class Statement {
         sb.append(String.format("적립 포인트: %d점\n", volumeCredits));
 
         return sb.toString();
+    }
+
+    private int volumeCreditsFor(JsonObject aPerformance) {
+        int volumeCredits = 0;
+        int perfAudience = aPerformance.get("audience").getAsInt();
+        volumeCredits += Math.max(perfAudience - 30, 0);
+        // 희극 관객 5명마다 추가 포인트를 제공한다.
+        if ("comedy".equals(playFor(aPerformance).get("type").getAsString())) {
+            volumeCredits += perfAudience / 5;
+        }
+        return volumeCredits;
     }
 
     private JsonObject playFor(JsonObject aPerformance) {
