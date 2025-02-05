@@ -24,9 +24,6 @@ public class Statement {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("청구 내역 (고객명: %s)\n", this.invoice.get("customer").getAsString() ));
 
-        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
-        currencyFormatter.setMinimumFractionDigits(2);
-
         for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")){
             JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
             int perfAudience = aPerformance.get("audience").getAsInt();
@@ -34,15 +31,21 @@ public class Statement {
             // 포인트를 적립한다.
             volumeCredits += volumeCreditsFor(aPerformance);
 
-            sb.append(String.format("  %s: %s (%d석) \n", playFor(aPerformance).get("name").getAsString(), currencyFormatter.format(amountFor(aPerformance)/100), perfAudience));
+            sb.append(String.format("  %s: %s (%d석) \n", playFor(aPerformance).get("name").getAsString(), format(amountFor(aPerformance)/100), perfAudience));
             totalAmount += amountFor(aPerformance);
         }
 
 
-        sb.append(String.format("총액: %s\n", currencyFormatter.format(totalAmount/100)));
+        sb.append(String.format("총액: %s\n", format(totalAmount/100)));
         sb.append(String.format("적립 포인트: %d점\n", volumeCredits));
 
         return sb.toString();
+    }
+
+    private static String format(double aNumber) {
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
+        currencyFormatter.setMinimumFractionDigits(2);
+        return currencyFormatter.format(aNumber);
     }
 
     private int volumeCreditsFor(JsonObject aPerformance) {
