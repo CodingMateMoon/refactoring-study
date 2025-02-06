@@ -31,21 +31,21 @@ public class Statement {
             // 포인트를 적립한다.
             volumeCredits += volumeCreditsFor(aPerformance);
 
-            sb.append(String.format("  %s: %s (%d석) \n", playFor(aPerformance).get("name").getAsString(), format(amountFor(aPerformance)/100), perfAudience));
+            sb.append(String.format("  %s: %s (%d석) \n", playFor(aPerformance).get("name").getAsString(), usd(amountFor(aPerformance)), perfAudience));
             totalAmount += amountFor(aPerformance);
         }
 
 
-        sb.append(String.format("총액: %s\n", format(totalAmount/100)));
+        sb.append(String.format("총액: %s\n", usd(totalAmount)));
         sb.append(String.format("적립 포인트: %d점\n", volumeCredits));
 
         return sb.toString();
     }
 
-    private static String format(double aNumber) {
+    private static String usd(double aNumber) {
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
         currencyFormatter.setMinimumFractionDigits(2);
-        return currencyFormatter.format(aNumber);
+        return currencyFormatter.format(aNumber/100);
     }
 
     private int volumeCreditsFor(JsonObject aPerformance) {
