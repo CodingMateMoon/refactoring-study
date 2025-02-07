@@ -28,13 +28,14 @@ public class Statement {
             JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
             int perfAudience = aPerformance.get("audience").getAsInt();
 
-            // 포인트를 적립한다.
-            volumeCredits += volumeCreditsFor(aPerformance);
-
             sb.append(String.format("  %s: %s (%d석) \n", playFor(aPerformance).get("name").getAsString(), usd(amountFor(aPerformance)), perfAudience));
             totalAmount += amountFor(aPerformance);
         }
 
+        for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")) {
+            JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
+            volumeCredits += volumeCreditsFor(aPerformance);
+        }
 
         sb.append(String.format("총액: %s\n", usd(totalAmount)));
         sb.append(String.format("적립 포인트: %d점\n", volumeCredits));
