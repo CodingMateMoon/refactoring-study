@@ -20,7 +20,6 @@ public class Statement {
 
     public String statement() throws Exception {
         double totalAmount = 0;
-        int volumeCredits = 0;
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("청구 내역 (고객명: %s)\n", this.invoice.get("customer").getAsString() ));
 
@@ -32,10 +31,7 @@ public class Statement {
             totalAmount += amountFor(aPerformance);
         }
 
-        for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")) {
-            JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
-            volumeCredits += volumeCreditsFor(aPerformance);
-        }
+        int volumeCredits = totalVolumeCredits();
 
         sb.append(String.format("총액: %s\n", usd(totalAmount)));
         sb.append(String.format("적립 포인트: %d점\n", volumeCredits));
@@ -58,6 +54,15 @@ public class Statement {
             volumeCredits += perfAudience / 5;
         }
         return volumeCredits;
+    }
+
+    private int totalVolumeCredits() {
+       int volumeCredits = 0;
+       for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")) {
+           JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
+           volumeCredits += volumeCreditsFor(aPerformance);
+       }
+       return volumeCredits;
     }
 
     private JsonObject playFor(JsonObject aPerformance) {
