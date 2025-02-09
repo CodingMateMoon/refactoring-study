@@ -31,10 +31,8 @@ public class Statement {
             totalAmount += amountFor(aPerformance);
         }
 
-        int volumeCredits = totalVolumeCredits();
-
         sb.append(String.format("총액: %s\n", usd(totalAmount)));
-        sb.append(String.format("적립 포인트: %d점\n", volumeCredits));
+        sb.append(String.format("적립 포인트: %d점\n", totalVolumeCredits()));
 
         return sb.toString();
     }
