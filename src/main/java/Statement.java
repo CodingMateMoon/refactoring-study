@@ -19,7 +19,6 @@ public class Statement {
     }
 
     public String statement() throws Exception {
-        double totalAmount = 0;
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("청구 내역 (고객명: %s)\n", this.invoice.get("customer").getAsString() ));
 
@@ -28,6 +27,11 @@ public class Statement {
             int perfAudience = aPerformance.get("audience").getAsInt();
 
             sb.append(String.format("  %s: %s (%d석) \n", playFor(aPerformance).get("name").getAsString(), usd(amountFor(aPerformance)), perfAudience));
+        }
+
+        double totalAmount = 0;
+        for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")){
+            JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
             totalAmount += amountFor(aPerformance);
         }
 
