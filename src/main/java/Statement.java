@@ -29,16 +29,19 @@ public class Statement {
             sb.append(String.format("  %s: %s (%d석) \n", playFor(aPerformance).get("name").getAsString(), usd(amountFor(aPerformance)), perfAudience));
         }
 
+        sb.append(String.format("총액: %s\n", usd(totalAmount())));
+        sb.append(String.format("적립 포인트: %d점\n", totalVolumeCredits()));
+
+        return sb.toString();
+    }
+
+    private double totalAmount() throws Exception {
         double totalAmount = 0;
         for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")){
             JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
             totalAmount += amountFor(aPerformance);
         }
-
-        sb.append(String.format("총액: %s\n", usd(totalAmount)));
-        sb.append(String.format("적립 포인트: %d점\n", totalVolumeCredits()));
-
-        return sb.toString();
+        return totalAmount;
     }
 
     private static String usd(double aNumber) {
