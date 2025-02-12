@@ -36,12 +36,12 @@ public class Statement {
     }
 
     private double totalAmount() throws Exception {
-        double totalAmount = 0;
+        double result = 0;
         for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")){
             JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
-            totalAmount += amountFor(aPerformance);
+            result += amountFor(aPerformance);
         }
-        return totalAmount;
+        return result;
     }
 
     private static String usd(double aNumber) {
@@ -62,12 +62,12 @@ public class Statement {
     }
 
     private int totalVolumeCredits() {
-       int volumeCredits = 0;
+       int result = 0;
        for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")) {
            JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
-           volumeCredits += volumeCreditsFor(aPerformance);
+           result += volumeCreditsFor(aPerformance);
        }
-       return volumeCredits;
+       return result;
     }
 
     private JsonObject playFor(JsonObject aPerformance) {
