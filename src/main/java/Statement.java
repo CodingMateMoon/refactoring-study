@@ -19,6 +19,10 @@ public class Statement {
     }
 
     public String statement() throws Exception {
+        return renderPlainText();
+    }
+
+    private String renderPlainText() throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("청구 내역 (고객명: %s)\n", this.invoice.get("customer").getAsString() ));
 
