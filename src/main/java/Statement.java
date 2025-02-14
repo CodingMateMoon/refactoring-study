@@ -12,10 +12,12 @@ public class Statement {
 
     private final JsonObject invoice;
     private final JsonObject plays;
+    private final StatementData statementData;
 
-    public Statement(JsonObject invoice, JsonObject plays) {
+    public Statement(JsonObject invoice, JsonObject plays, StatementData statementData) {
         this.invoice = invoice;
         this.plays = plays;
+        this.statementData = statementData;
     }
 
     public String statement() throws Exception {
@@ -24,7 +26,7 @@ public class Statement {
 
     private String renderPlainText() throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("청구 내역 (고객명: %s)\n", this.invoice.get("customer").getAsString() ));
+        sb.append(String.format("청구 내역 (고객명: %s)\n", this.statementData.customer() ));
 
         for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")){
             JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
