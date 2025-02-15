@@ -1,11 +1,10 @@
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
 
 public class Statement {
@@ -14,10 +13,11 @@ public class Statement {
     private final JsonObject plays;
     private final StatementData statementData;
 
-    public Statement(JsonObject invoice, JsonObject plays, StatementData statementData) {
+    public Statement(JsonObject invoice, JsonObject plays) {
         this.invoice = invoice;
         this.plays = plays;
-        this.statementData = statementData;
+        Gson gson = new Gson();
+        this.statementData = gson.fromJson(this.invoice, new TypeToken<StatementData>() {}.getType());
     }
 
     public String statement() throws Exception {
@@ -28,11 +28,10 @@ public class Statement {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("청구 내역 (고객명: %s)\n", this.statementData.customer() ));
 
-        for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")){
-            JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
-            int perfAudience = aPerformance.get("audience").getAsInt();
+        for(Performance performance: this.statementData.performances()){
+            int perfAudience = performance.audience();
 
-            sb.append(String.format("  %s: %s (%d석) \n", playFor(aPerformance).get("name").getAsString(), usd(amountFor(aPerformance)), perfAudience));
+            sb.append(String.format("  %s: %s (%d석) \n", playFor(performance).get("name").getAsString(), usd(amountFor(performance)), perfAudience));
         }
 
         sb.append(String.format("총액: %s\n", usd(totalAmount())));
@@ -43,8 +42,7 @@ public class Statement {
 
     private double totalAmount() throws Exception {
         double result = 0;
-        for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")){
-            JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
+        for(Performance aPerformance: this.statementData.performances()){
             result += amountFor(aPerformance);
         }
         return result;
@@ -56,9 +54,9 @@ public class Statement {
         return currencyFormatter.format(aNumber/100);
     }
 
-    private int volumeCreditsFor(JsonObject aPerformance) {
+    private int volumeCreditsFor(Performance aPerformance) {
         int volumeCredits = 0;
-        int perfAudience = aPerformance.get("audience").getAsInt();
+        int perfAudience = aPerformance.audience();
         volumeCredits += Math.max(perfAudience - 30, 0);
         // 희극 관객 5명마다 추가 포인트를 제공한다.
         if ("comedy".equals(playFor(aPerformance).get("type").getAsString())) {
@@ -69,20 +67,19 @@ public class Statement {
 
     private int totalVolumeCredits() {
        int result = 0;
-       for(JsonElement aPerformanceElement: this.invoice.getAsJsonArray("performances")) {
-           JsonObject aPerformance = aPerformanceElement.getAsJsonObject();
+       for(Performance aPerformance: this.statementData.performances()){
            result += volumeCreditsFor(aPerformance);
        }
        return result;
     }
 
-    private JsonObject playFor(JsonObject aPerformance) {
-        return this.plays.getAsJsonObject(aPerformance.get("playID").getAsString());
+    private JsonObject playFor(Performance aPerformance) {
+        return this.plays.getAsJsonObject(aPerformance.playID());
     }
 
-    private double amountFor(JsonObject aPerformance) throws Exception {
+    private double amountFor(Performance aPerformance) throws Exception {
         double result;
-        int aPerformanceAudience = aPerformance.get("audience").getAsInt();
+        int aPerformanceAudience = aPerformance.audience();
         switch(playFor(aPerformance).get("type").getAsString()) {
             case "tragedy": // 비극
                 result = 40000;

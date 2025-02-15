@@ -1,2 +1,2 @@
-public record Performance(String playId, int audience) {
+public record Performance(String playID, int audience) {
 }

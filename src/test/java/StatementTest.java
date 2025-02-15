@@ -34,7 +34,7 @@ class StatementTest {
 적립 포인트: 47점
 """;
 
-            Assertions.assertThat(new Statement(invoice, plays, statementDatas.get(index++)).statement()).isEqualTo(expected);
+            Assertions.assertThat(new Statement(invoice, plays).statement()).isEqualTo(expected);
         }
     }
 }
