@@ -19,7 +19,6 @@ class StatementTest {
         JsonArray invoices = Statement.loadJsonArray("json/invoices.json");
         JsonObject plays = Statement.loadJson("json/plays.json");
         Gson gson = new Gson();
-        List<StatementData> statementDatas = gson.fromJson(invoices, new TypeToken<List<StatementData>>() {}.getType());
         int index = 0;
 
         for (JsonElement jsonElement : invoices) {

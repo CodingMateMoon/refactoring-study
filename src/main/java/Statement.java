@@ -6,18 +6,31 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Statement {
 
-    private final JsonObject invoice;
-    private final JsonObject plays;
+    private final Invoice invoice;
+    private final Map<String, Play> plays;
     private final StatementData statementData;
 
-    public Statement(JsonObject invoice, JsonObject plays) {
-        this.invoice = invoice;
-        this.plays = plays;
+    public Statement(JsonObject jsonInvoice, JsonObject plays) {
         Gson gson = new Gson();
-        this.statementData = gson.fromJson(this.invoice, new TypeToken<StatementData>() {}.getType());
+        this.invoice= gson.fromJson(jsonInvoice, new TypeToken<Invoice>() {}.getType());
+        this.plays = gson.fromJson(plays, new TypeToken<Map<String, Play>>() {}.getType());
+        this.statementData = generateStatement(this.invoice, this.plays);
+    }
+
+    public static StatementData generateStatement(Invoice invoice, Map<String, Play> plays) {
+        List<EnrichPerformance> enrichedPerformances = invoice.performances().stream()
+                .map(performance -> new EnrichPerformance(
+                        performance.playID(),
+                        performance.audience(),
+                        plays.get(performance.playID())))
+                .collect(Collectors.toList());
+
+        return new StatementData(invoice.customer(), enrichedPerformances);
     }
 
     public String statement() throws Exception {
@@ -28,10 +41,10 @@ public class Statement {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("청구 내역 (고객명: %s)\n", this.statementData.customer() ));
 
-        for(Performance performance: this.statementData.performances()){
+        for(EnrichPerformance performance: this.statementData.enrichPerformances()){
             int perfAudience = performance.audience();
 
-            sb.append(String.format("  %s: %s (%d석) \n", playFor(performance).get("name").getAsString(), usd(amountFor(performance)), perfAudience));
+            sb.append(String.format("  %s: %s (%d석) \n", performance.play().name(), usd(amountFor(performance)), perfAudience));
         }
 
         sb.append(String.format("총액: %s\n", usd(totalAmount())));
@@ -42,7 +55,7 @@ public class Statement {
 
     private double totalAmount() throws Exception {
         double result = 0;
-        for(Performance aPerformance: this.statementData.performances()){
+        for(EnrichPerformance aPerformance: this.statementData.enrichPerformances()){
             result += amountFor(aPerformance);
         }
         return result;
@@ -54,12 +67,12 @@ public class Statement {
         return currencyFormatter.format(aNumber/100);
     }
 
-    private int volumeCreditsFor(Performance aPerformance) {
+    private int volumeCreditsFor(EnrichPerformance aPerformance) {
         int volumeCredits = 0;
         int perfAudience = aPerformance.audience();
         volumeCredits += Math.max(perfAudience - 30, 0);
         // 희극 관객 5명마다 추가 포인트를 제공한다.
-        if ("comedy".equals(playFor(aPerformance).get("type").getAsString())) {
+        if ("comedy".equals(aPerformance.play().type())) {
             volumeCredits += perfAudience / 5;
         }
         return volumeCredits;
@@ -67,20 +80,20 @@ public class Statement {
 
     private int totalVolumeCredits() {
        int result = 0;
-       for(Performance aPerformance: this.statementData.performances()){
+       for(EnrichPerformance aPerformance: this.statementData.enrichPerformances()){
            result += volumeCreditsFor(aPerformance);
        }
        return result;
     }
 
-    private JsonObject playFor(Performance aPerformance) {
-        return this.plays.getAsJsonObject(aPerformance.playID());
+    private Play playFor(EnrichPerformance aPerformance) {
+        return this.plays.get(aPerformance.playID());
     }
 
-    private double amountFor(Performance aPerformance) throws Exception {
+    private double amountFor(EnrichPerformance aPerformance) throws Exception {
         double result;
         int aPerformanceAudience = aPerformance.audience();
-        switch(playFor(aPerformance).get("type").getAsString()) {
+        switch(aPerformance.play().type()) {
             case "tragedy": // 비극
                 result = 40000;
                 if (aPerformanceAudience > 30) {
@@ -96,7 +109,7 @@ public class Statement {
                 break;
 
             default:
-                throw new Exception(String.format("알 수 없는 장르: %s", playFor(aPerformance).get("type").getAsString()));
+                throw new Exception(String.format("알 수 없는 장르: %s", aPerformance.play().type()));
         }
         return result;
     }
