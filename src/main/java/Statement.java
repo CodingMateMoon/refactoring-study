@@ -22,12 +22,12 @@ public class Statement {
         this.statementData = generateStatement(this.invoice, this.plays);
     }
 
-    public static StatementData generateStatement(Invoice invoice, Map<String, Play> plays) {
+    public StatementData generateStatement(Invoice invoice, Map<String, Play> plays) {
         List<EnrichPerformance> enrichedPerformances = invoice.performances().stream()
                 .map(performance -> new EnrichPerformance(
                         performance.playID(),
                         performance.audience(),
-                        plays.get(performance.playID())))
+                        playFor(performance)))
                 .collect(Collectors.toList());
 
         return new StatementData(invoice.customer(), enrichedPerformances);
@@ -86,7 +86,7 @@ public class Statement {
        return result;
     }
 
-    private Play playFor(EnrichPerformance aPerformance) {
+    private Play playFor(Performance aPerformance) {
         return this.plays.get(aPerformance.playID());
     }
 
