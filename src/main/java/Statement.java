@@ -24,10 +24,18 @@ public class Statement {
 
     public StatementData generateStatement(Invoice invoice, Map<String, Play> plays) {
         List<EnrichPerformance> enrichedPerformances = invoice.performances().stream()
-                .map(performance -> new EnrichPerformance(
-                        performance.playID(),
-                        performance.audience(),
-                        playFor(performance)))
+                .map(performance -> {
+                            try {
+                                return new EnrichPerformance(
+                                        performance.playID(),
+                                        performance.audience(),
+                                        playFor(performance),
+                                                amountFor(performance));
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        )
                 .collect(Collectors.toList());
 
         return new StatementData(invoice.customer(), enrichedPerformances);
@@ -44,7 +52,7 @@ public class Statement {
         for(EnrichPerformance performance: this.statementData.enrichPerformances()){
             int perfAudience = performance.audience();
 
-            sb.append(String.format("  %s: %s (%d석) \n", performance.play().name(), usd(amountFor(performance)), perfAudience));
+            sb.append(String.format("  %s: %s (%d석) \n", performance.play().name(), usd(performance.amount()), perfAudience));
         }
 
         sb.append(String.format("총액: %s\n", usd(totalAmount())));
@@ -56,7 +64,7 @@ public class Statement {
     private double totalAmount() throws Exception {
         double result = 0;
         for(EnrichPerformance aPerformance: this.statementData.enrichPerformances()){
-            result += amountFor(aPerformance);
+            result += aPerformance.amount();
         }
         return result;
     }
@@ -90,10 +98,11 @@ public class Statement {
         return this.plays.get(aPerformance.playID());
     }
 
-    private double amountFor(EnrichPerformance aPerformance) throws Exception {
+    private double amountFor(Performance aPerformance) throws Exception {
         double result;
         int aPerformanceAudience = aPerformance.audience();
-        switch(aPerformance.play().type()) {
+        Play play = playFor(aPerformance);
+        switch(play.type()) {
             case "tragedy": // 비극
                 result = 40000;
                 if (aPerformanceAudience > 30) {
@@ -109,7 +118,7 @@ public class Statement {
                 break;
 
             default:
-                throw new Exception(String.format("알 수 없는 장르: %s", aPerformance.play().type()));
+                throw new Exception(String.format("알 수 없는 장르: %s", play.type()));
         }
         return result;
     }
