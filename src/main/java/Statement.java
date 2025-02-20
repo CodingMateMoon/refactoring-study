@@ -50,9 +50,9 @@ public class Statement {
         sb.append(String.format("청구 내역 (고객명: %s)\n", this.statementData.customer() ));
 
         for(EnrichPerformance performance: this.statementData.enrichPerformances()){
-            int perfAudience = performance.audience();
+            int perfAudience = performance.getAudience();
 
-            sb.append(String.format("  %s: %s (%d석) \n", performance.play().name(), usd(performance.amount()), perfAudience));
+            sb.append(String.format("  %s: %s (%d석) \n", performance.getPlay().name(), usd(performance.getAmount()), perfAudience));
         }
 
         sb.append(String.format("총액: %s\n", usd(totalAmount())));
@@ -64,7 +64,7 @@ public class Statement {
     private double totalAmount() throws Exception {
         double result = 0;
         for(EnrichPerformance aPerformance: this.statementData.enrichPerformances()){
-            result += aPerformance.amount();
+            result += aPerformance.getAmount();
         }
         return result;
     }
@@ -77,10 +77,10 @@ public class Statement {
 
     private int volumeCreditsFor(EnrichPerformance aPerformance) {
         int volumeCredits = 0;
-        int perfAudience = aPerformance.audience();
+        int perfAudience = aPerformance.getAudience();
         volumeCredits += Math.max(perfAudience - 30, 0);
         // 희극 관객 5명마다 추가 포인트를 제공한다.
-        if ("comedy".equals(aPerformance.play().type())) {
+        if ("comedy".equals(aPerformance.getPlay().type())) {
             volumeCredits += perfAudience / 5;
         }
         return volumeCredits;
