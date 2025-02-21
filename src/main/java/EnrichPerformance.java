@@ -4,15 +4,17 @@ public class EnrichPerformance {
     int audience;
     Play play;
     double amount;
+    int volumeCredits;
 
     public EnrichPerformance(){
     }
 
-    public EnrichPerformance(String playID, int audience, Play play, double amount) {
+    public EnrichPerformance(String playID, int audience, Play play, double amount, int volumeCredits) {
         this.playID = playID;
         this.audience = audience;
         this.play = play;
         this.amount = amount;
+        this.volumeCredits = volumeCredits;
     }
 
     public String getPlayID() {
@@ -45,5 +47,13 @@ public class EnrichPerformance {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public int getVolumeCredits() {
+        return volumeCredits;
+    }
+
+    public void setVolumeCredits(int volumeCredits) {
+        this.volumeCredits = volumeCredits;
     }
 }

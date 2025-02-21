@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -15,30 +16,22 @@ public class Statement {
     private final Map<String, Play> plays;
     private final StatementData statementData;
 
-    public Statement(JsonObject jsonInvoice, JsonObject plays) {
+    public Statement(JsonObject jsonInvoice, JsonObject plays) throws Exception {
         Gson gson = new Gson();
         this.invoice= gson.fromJson(jsonInvoice, new TypeToken<Invoice>() {}.getType());
         this.plays = gson.fromJson(plays, new TypeToken<Map<String, Play>>() {}.getType());
         this.statementData = generateStatement(this.invoice, this.plays);
     }
 
-    public StatementData generateStatement(Invoice invoice, Map<String, Play> plays) {
-        List<EnrichPerformance> enrichedPerformances = invoice.performances().stream()
-                .map(performance -> {
-                            try {
-                                return new EnrichPerformance(
-                                        performance.playID(),
-                                        performance.audience(),
-                                        playFor(performance),
-                                                amountFor(performance));
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        )
-                .collect(Collectors.toList());
+    public StatementData generateStatement(Invoice invoice, Map<String, Play> plays) throws Exception {
+        List<EnrichPerformance> enrichPerformances = new ArrayList<>();
 
-        return new StatementData(invoice.customer(), enrichedPerformances);
+        for (Performance performance : invoice.performances()) {
+            EnrichPerformance enrichPerformance = new EnrichPerformance(performance.playID(), performance.audience(), playFor(performance), amountFor(performance), 0);
+            enrichPerformance.setVolumeCredits(volumeCreditsFor(enrichPerformance));
+            enrichPerformances.add(enrichPerformance);
+        }
+        return new StatementData(invoice.customer(), enrichPerformances);
     }
 
     public String statement() throws Exception {
