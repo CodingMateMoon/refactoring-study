@@ -82,7 +82,7 @@ public class Statement {
     private int totalVolumeCredits() {
        int result = 0;
        for(EnrichPerformance aPerformance: this.statementData.enrichPerformances()){
-           result += volumeCreditsFor(aPerformance);
+           result += aPerformance.getVolumeCredits();
        }
        return result;
     }
