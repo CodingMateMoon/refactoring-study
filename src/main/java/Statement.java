@@ -58,11 +58,7 @@ public class Statement {
     }
 
     private double totalAmount(StatementData statementData) throws Exception {
-        double result = 0;
-        for(EnrichPerformance aPerformance: statementData.getEnrichPerformances()){
-            result += aPerformance.getAmount();
-        }
-        return result;
+        return statementData.getEnrichPerformances().stream().mapToDouble(EnrichPerformance::getAmount).sum();
     }
 
     private static String usd(double aNumber) {
@@ -83,11 +79,7 @@ public class Statement {
     }
 
     private int totalVolumeCredits(StatementData statementData) {
-       int result = 0;
-       for(EnrichPerformance aPerformance: statementData.getEnrichPerformances()){
-           result += aPerformance.getVolumeCredits();
-       }
-       return result;
+       return statementData.getEnrichPerformances().stream().mapToInt(EnrichPerformance::getVolumeCredits).sum();
     }
 
     private Play playFor(Performance aPerformance) {
