@@ -31,7 +31,10 @@ public class Statement {
             enrichPerformance.setVolumeCredits(volumeCreditsFor(enrichPerformance));
             enrichPerformances.add(enrichPerformance);
         }
-        return new StatementData(invoice.customer(), enrichPerformances);
+        StatementData statementData = new StatementData(invoice.customer(), enrichPerformances);
+        statementData.setTotalAmount(totalAmount(statementData));
+        statementData.setTotalVolumeCredits(totalVolumeCredits(statementData));
+        return statementData;
     }
 
     public String statement() throws Exception {
@@ -40,23 +43,23 @@ public class Statement {
 
     private String renderPlainText() throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("청구 내역 (고객명: %s)\n", this.statementData.customer() ));
+        sb.append(String.format("청구 내역 (고객명: %s)\n", this.statementData.getCustomer() ));
 
-        for(EnrichPerformance performance: this.statementData.enrichPerformances()){
+        for(EnrichPerformance performance: this.statementData.getEnrichPerformances()){
             int perfAudience = performance.getAudience();
 
             sb.append(String.format("  %s: %s (%d석) \n", performance.getPlay().name(), usd(performance.getAmount()), perfAudience));
         }
 
-        sb.append(String.format("총액: %s\n", usd(totalAmount())));
-        sb.append(String.format("적립 포인트: %d점\n", totalVolumeCredits()));
+        sb.append(String.format("총액: %s\n", usd(this.statementData.getTotalAmount())));
+        sb.append(String.format("적립 포인트: %d점\n", this.statementData.getTotalVolumeCredits()));
 
         return sb.toString();
     }
 
-    private double totalAmount() throws Exception {
+    private double totalAmount(StatementData statementData) throws Exception {
         double result = 0;
-        for(EnrichPerformance aPerformance: this.statementData.enrichPerformances()){
+        for(EnrichPerformance aPerformance: statementData.getEnrichPerformances()){
             result += aPerformance.getAmount();
         }
         return result;
@@ -79,9 +82,9 @@ public class Statement {
         return volumeCredits;
     }
 
-    private int totalVolumeCredits() {
+    private int totalVolumeCredits(StatementData statementData) {
        int result = 0;
-       for(EnrichPerformance aPerformance: this.statementData.enrichPerformances()){
+       for(EnrichPerformance aPerformance: statementData.getEnrichPerformances()){
            result += aPerformance.getVolumeCredits();
        }
        return result;
