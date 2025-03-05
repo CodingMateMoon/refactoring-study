@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Statement {
 
@@ -20,10 +19,10 @@ public class Statement {
         Gson gson = new Gson();
         this.invoice= gson.fromJson(jsonInvoice, new TypeToken<Invoice>() {}.getType());
         this.plays = gson.fromJson(plays, new TypeToken<Map<String, Play>>() {}.getType());
-        this.statementData = generateStatement(this.invoice, this.plays);
+        this.statementData = createStatementData(this.invoice, this.plays);
     }
 
-    public StatementData generateStatement(Invoice invoice, Map<String, Play> plays) throws Exception {
+    public StatementData createStatementData(Invoice invoice, Map<String, Play> plays) throws Exception {
         List<EnrichPerformance> enrichPerformances = new ArrayList<>();
 
         for (Performance performance : invoice.performances()) {
