@@ -26,14 +26,18 @@ public class Statement {
         List<EnrichPerformance> enrichPerformances = new ArrayList<>();
 
         for (Performance performance : invoice.performances()) {
-            EnrichPerformance enrichPerformance = new EnrichPerformance(performance.playID(), performance.audience(), playFor(performance), amountFor(performance), 0);
-            enrichPerformance.setVolumeCredits(volumeCreditsFor(enrichPerformance));
-            enrichPerformances.add(enrichPerformance);
+            enrichPerformances.add(enrichPerformance(performance));
         }
         StatementData statementData = new StatementData(invoice.customer(), enrichPerformances);
         statementData.setTotalAmount(totalAmount(statementData));
         statementData.setTotalVolumeCredits(totalVolumeCredits(statementData));
         return statementData;
+    }
+
+    private EnrichPerformance enrichPerformance(Performance performance) throws Exception {
+        EnrichPerformance enrichPerformance = new EnrichPerformance(performance.playID(), performance.audience(), playFor(performance), amountFor(performance), 0);
+        enrichPerformance.setVolumeCredits(volumeCreditsFor(enrichPerformance));
+        return enrichPerformance;
     }
 
     public String statement() throws Exception {
