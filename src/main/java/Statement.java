@@ -91,28 +91,7 @@ public class Statement {
     }
 
     private double amountFor(Performance aPerformance) throws Exception {
-        double result;
-        int aPerformanceAudience = aPerformance.audience();
-        Play play = playFor(aPerformance);
-        switch(play.type()) {
-            case "tragedy": // 비극
-                result = 40000;
-                if (aPerformanceAudience > 30) {
-                    result += 1000 * (aPerformanceAudience - 30);
-                }
-                break;
-            case "comedy": // 희극
-                result = 30000;
-                if (aPerformanceAudience > 20) {
-                    result += 10000 + 500 * (aPerformanceAudience - 20);
-                }
-                result += 300 * aPerformanceAudience;
-                break;
-
-            default:
-                throw new Exception(String.format("알 수 없는 장르: %s", play.type()));
-        }
-        return result;
+        return new PerformanceCalculator(aPerformance, playFor(aPerformance)).amount();
     }
 
     public static JsonObject loadJson(String filePath) throws IOException {
