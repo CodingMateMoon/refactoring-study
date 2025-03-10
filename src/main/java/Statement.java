@@ -36,7 +36,7 @@ public class Statement {
 
     private EnrichPerformance enrichPerformance(Performance performance) throws Exception {
         PerformanceCalculator calculator = new PerformanceCalculator(performance, playFor(performance));
-        EnrichPerformance enrichPerformance = new EnrichPerformance(performance.playID(), performance.audience(), calculator.getPlay(), amountFor(performance), 0);
+        EnrichPerformance enrichPerformance = new EnrichPerformance(performance.playID(), performance.audience(), calculator.getPlay(), calculator.amount(), 0);
         enrichPerformance.setVolumeCredits(volumeCreditsFor(enrichPerformance));
         return enrichPerformance;
     }
