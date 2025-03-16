@@ -46,5 +46,15 @@ public class PerformanceCalculator {
         }
         return result;
     }
+    public int volumeCredits() {
+        int volumeCredits = 0;
+        int perfAudience = this.performance.audience();
+        volumeCredits += Math.max(perfAudience - 30, 0);
+        // 희극 관객 5명마다 추가 포인트를 제공한다.
+        if ("comedy".equals(this.play.type())) {
+            volumeCredits += perfAudience / 5;
+        }
+        return volumeCredits;
+    }
 
 }

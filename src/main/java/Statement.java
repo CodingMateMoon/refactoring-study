@@ -37,7 +37,7 @@ public class Statement {
     private EnrichPerformance enrichPerformance(Performance performance) throws Exception {
         PerformanceCalculator calculator = new PerformanceCalculator(performance, playFor(performance));
         EnrichPerformance enrichPerformance = new EnrichPerformance(performance.playID(), performance.audience(), calculator.getPlay(), calculator.amount(), 0);
-        enrichPerformance.setVolumeCredits(volumeCreditsFor(enrichPerformance));
+        enrichPerformance.setVolumeCredits(volumeCreditsFor(performance));
         return enrichPerformance;
     }
 
@@ -71,15 +71,8 @@ public class Statement {
         return currencyFormatter.format(aNumber/100);
     }
 
-    private int volumeCreditsFor(EnrichPerformance aPerformance) {
-        int volumeCredits = 0;
-        int perfAudience = aPerformance.getAudience();
-        volumeCredits += Math.max(perfAudience - 30, 0);
-        // 희극 관객 5명마다 추가 포인트를 제공한다.
-        if ("comedy".equals(aPerformance.getPlay().type())) {
-            volumeCredits += perfAudience / 5;
-        }
-        return volumeCredits;
+    private int volumeCreditsFor(Performance aPerformance) {
+        return new PerformanceCalculator(aPerformance, playFor(aPerformance)).volumeCredits();
     }
 
     private int totalVolumeCredits(StatementData statementData) {
