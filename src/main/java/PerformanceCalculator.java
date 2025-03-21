@@ -7,20 +7,8 @@ public class PerformanceCalculator {
         this.play = play;
     }
 
-    public Performance getPerformance() {
-        return performance;
-    }
-
-    public void setPerformance(Performance performance) {
-        this.performance = performance;
-    }
-
     public Play getPlay() {
         return play;
-    }
-
-    public void setPlay(Play play) {
-        this.play = play;
     }
 
     public double amount() throws Exception {
