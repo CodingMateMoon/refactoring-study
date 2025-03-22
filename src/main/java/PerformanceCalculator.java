@@ -16,11 +16,7 @@ public class PerformanceCalculator {
         int aPerformanceAudience = this.performance.audience();
         switch(this.play.type()) {
             case "tragedy": // 비극
-                result = 40000;
-                if (aPerformanceAudience > 30) {
-                    result += 1000 * (aPerformanceAudience - 30);
-                }
-                break;
+                throw new Exception("비극 오류");
             case "comedy": // 희극
                 result = 30000;
                 if (aPerformanceAudience > 20) {

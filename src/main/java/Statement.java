@@ -35,9 +35,18 @@ public class Statement {
     }
 
     private EnrichPerformance enrichPerformance(Performance performance) throws Exception {
-        PerformanceCalculator calculator = new PerformanceCalculator(performance, playFor(performance));
+        PerformanceCalculator calculator = createPerformanceCalculator(performance, playFor(performance));
         EnrichPerformance enrichPerformance = new EnrichPerformance(performance.playID(), performance.audience(), calculator.getPlay(), calculator.amount(), calculator.volumeCredits());
         return enrichPerformance;
+    }
+
+    private PerformanceCalculator createPerformanceCalculator(Performance performance, Play play){
+        switch (play.type()) {
+            case "tragedy": return new TragedyCalculator(performance, play);
+            case "comedy": return new ComedyCalculator(performance, play);
+            default:
+                throw new IllegalArgumentException("Unknown play type: " + play.type());
+        }
     }
 
     public String statement() throws Exception {
