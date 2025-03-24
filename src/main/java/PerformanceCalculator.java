@@ -12,23 +12,7 @@ public class PerformanceCalculator {
     }
 
     public double amount() throws Exception {
-        double result;
-        int aPerformanceAudience = this.performance.audience();
-        switch(this.play.type()) {
-            case "tragedy": // 비극
-                throw new Exception("비극 오류");
-            case "comedy": // 희극
-                result = 30000;
-                if (aPerformanceAudience > 20) {
-                    result += 10000 + 500 * (aPerformanceAudience - 20);
-                }
-                result += 300 * aPerformanceAudience;
-                break;
-
-            default:
-                throw new Exception(String.format("알 수 없는 장르: %s", play.type()));
-        }
-        return result;
+        throw new Exception("서브클래스에서 처리하도록 설계되었습니다.");
     }
     public int volumeCredits() {
         int volumeCredits = 0;
