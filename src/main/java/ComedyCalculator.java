@@ -12,4 +12,9 @@ public class ComedyCalculator extends PerformanceCalculator{
         result += 300 * this.performance.audience();
         return result;
     }
+
+    @Override
+    public int volumeCredits() {
+        return super.volumeCredits() + (this.performance.audience() / 5);
+    }
 }
